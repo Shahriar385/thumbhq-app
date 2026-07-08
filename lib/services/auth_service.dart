@@ -39,8 +39,11 @@ class AuthService {
       } else {
         _nativeGoogleSignIn ??= native.GoogleSignIn.instance;
         // Initialize the instance exactly once before any methods are called
+        final String nativeClientId = (defaultTargetPlatform == TargetPlatform.macOS || defaultTargetPlatform == TargetPlatform.iOS)
+            ? '14892257053-etk0c56kuvnoeis7jh5fqg4cd80pf7bk.apps.googleusercontent.com'
+            : '14892257053-o4kbbss2thobcbijg7nmmvi1lolfdt97.apps.googleusercontent.com';
         await _nativeGoogleSignIn!.initialize(
-          clientId: '14892257053-o4kbbss2thobcbijg7nmmvi1lolfdt97.apps.googleusercontent.com',
+          clientId: nativeClientId,
         );
         final native.GoogleSignInAccount? account = await _nativeGoogleSignIn!.authenticate();
         if (account == null) return null;
