@@ -20,7 +20,7 @@ class AuthService {
       if (kIsWeb) {
         final provider = GoogleAuthProvider();
         return await _auth.signInWithPopup(provider);
-      } else if (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux) {
+      } else if (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux || defaultTargetPlatform == TargetPlatform.macOS) {
         _desktopGoogleSignIn ??= all_platforms.GoogleSignIn(
           params: all_platforms.GoogleSignInParams(
             clientId: '14892257053-o4kbbss2thobcbijg7nmmvi1lolfdt97.apps.googleusercontent.com',
@@ -37,6 +37,7 @@ class AuthService {
         );
         return await _auth.signInWithCredential(authCredential);
       } else {
+        // Fallback for iOS/Android
         _nativeGoogleSignIn ??= native.GoogleSignIn.instance;
         // Initialize the instance exactly once before any methods are called
         final String nativeClientId = (defaultTargetPlatform == TargetPlatform.macOS || defaultTargetPlatform == TargetPlatform.iOS)
