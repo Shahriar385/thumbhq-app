@@ -24,7 +24,7 @@ class AuthService {
         _desktopGoogleSignIn ??= all_platforms.GoogleSignIn(
           params: all_platforms.GoogleSignInParams(
             clientId: '14892257053-o4kbbss2thobcbijg7nmmvi1lolfdt97.apps.googleusercontent.com',
-            clientSecret: '',
+            clientSecret: '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',
             redirectPort: 8080,
           ),
         );
@@ -37,14 +37,16 @@ class AuthService {
         );
         return await _auth.signInWithCredential(authCredential);
       } else {
-        _nativeGoogleSignIn ??= native.GoogleSignIn();
-        final native.GoogleSignInAccount? account = await _nativeGoogleSignIn!.signIn();
+        _nativeGoogleSignIn ??= native.GoogleSignIn.instance;
+        // Initialize the instance exactly once before any methods are called
+        await _nativeGoogleSignIn!.initialize(
+          clientId: '14892257053-o4kbbss2thobcbijg7nmmvi1lolfdt97.apps.googleusercontent.com',
+        );
+        final native.GoogleSignInAccount? account = await _nativeGoogleSignIn!.authenticate();
         if (account == null) return null;
 
-        final native.GoogleSignInAuthentication auth = account.authentication;
         final authCredential = GoogleAuthProvider.credential(
-          accessToken: auth.accessToken,
-          idToken: auth.idToken,
+          idToken: account.authentication.idToken,
         );
         return await _auth.signInWithCredential(authCredential);
       }
