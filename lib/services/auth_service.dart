@@ -15,7 +15,10 @@ class AuthService {
   /// Sign in with Google using Firebase Auth popup (web-native) or system browser (desktop)
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) {
+      if (kIsWeb) {
+        final provider = GoogleAuthProvider();
+        return await _auth.signInWithPopup(provider);
+      } else {
         _googleSignIn ??= GoogleSignIn(
           params: GoogleSignInParams(
             clientId: '14892257053-o4kbbss2thobcbijg7nmmvi1lolfdt97.apps.googleusercontent.com',
@@ -31,9 +34,6 @@ class AuthService {
           idToken: credentials.idToken,
         );
         return await _auth.signInWithCredential(authCredential);
-      } else {
-        final provider = GoogleAuthProvider();
-        return await _auth.signInWithPopup(provider);
       }
     } catch (e) {
       rethrow;
@@ -41,7 +41,7 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows && _googleSignIn != null) {
+    if (!kIsWeb && _googleSignIn != null) {
       await _googleSignIn!.signOut();
     }
     await _auth.signOut();
