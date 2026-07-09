@@ -507,6 +507,8 @@ class _MessageBubbleState extends State<_MessageBubble> {
                               child: CachedNetworkImage(
                                 imageUrl: message.imageUrl!,
                                 fit: BoxFit.cover,
+                                memCacheWidth: 500,
+                                fadeInDuration: const Duration(milliseconds: 200),
                                 placeholder: (context, url) => Container(
                                   color: AppColors.background,
                                   width: 200,

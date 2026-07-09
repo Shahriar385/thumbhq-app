@@ -204,6 +204,8 @@ class ProjectCard extends ConsumerWidget {
                   child: CachedNetworkImage(
                     imageUrl: customImageUrl,
                     fit: BoxFit.cover,
+                    memCacheWidth: 400, // Resize image in memory to prevent lag
+                    fadeInDuration: const Duration(milliseconds: 300),
                     placeholder: (context, url) => Shimmer.fromColors(
                       baseColor: AppColors.surfaceElevated,
                       highlightColor: AppColors.border,

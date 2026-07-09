@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../theme/app_colors.dart';
 
@@ -19,35 +20,39 @@ class UserAvatar extends StatefulWidget {
 }
 
 class _UserAvatarState extends State<UserAvatar> {
-  bool _hasError = false;
-
   @override
   Widget build(BuildContext context) {
-    final hasValidUrl = widget.photoURL.isNotEmpty && !_hasError;
+    final hasValidUrl = widget.photoURL.isNotEmpty;
+    final fallbackWidget = Text(
+      widget.displayName.isNotEmpty
+          ? widget.displayName[0].toUpperCase()
+          : '?',
+      style: TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: widget.radius * 0.8,
+        fontWeight: FontWeight.w600,
+      ),
+    );
 
-    return CircleAvatar(
-      radius: widget.radius,
-      backgroundColor: AppColors.surfaceElevated,
-      backgroundImage: hasValidUrl ? NetworkImage(widget.photoURL) : null,
-      onBackgroundImageError: hasValidUrl
-          ? (exception, stackTrace) {
-              if (mounted) {
-                setState(() => _hasError = true);
-              }
-            }
-          : null,
-      child: !hasValidUrl
-          ? Text(
-              widget.displayName.isNotEmpty
-                  ? widget.displayName[0].toUpperCase()
-                  : '?',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: widget.radius * 0.8,
-                fontWeight: FontWeight.w600,
+    return Container(
+      width: widget.radius * 2,
+      height: widget.radius * 2,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceElevated,
+        shape: BoxShape.circle,
+      ),
+      child: hasValidUrl
+          ? ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: widget.photoURL,
+                fit: BoxFit.cover,
+                memCacheWidth: (widget.radius * 3).toInt(), // Optimize memory
+                fadeInDuration: const Duration(milliseconds: 200),
+                placeholder: (context, url) => Center(child: fallbackWidget),
+                errorWidget: (context, url, error) => Center(child: fallbackWidget),
               ),
             )
-          : null,
+          : Center(child: fallbackWidget),
     );
   }
 }

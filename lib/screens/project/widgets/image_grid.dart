@@ -53,6 +53,8 @@ class ImageGrid extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: imageUrls[index],
                 fit: BoxFit.cover,
+                memCacheWidth: 300, // Optimize memory for 100px width thumbnail
+                fadeInDuration: const Duration(milliseconds: 200),
                 placeholder: (context, url) => Shimmer.fromColors(
                   baseColor: AppColors.surfaceElevated,
                   highlightColor: AppColors.border,

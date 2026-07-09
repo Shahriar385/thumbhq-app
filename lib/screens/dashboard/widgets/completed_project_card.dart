@@ -92,6 +92,8 @@ class CompletedProjectCard extends StatelessWidget {
                         child: CachedNetworkImage(
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
+                          memCacheWidth: 800, // Resize image in memory to prevent lag
+                          fadeInDuration: const Duration(milliseconds: 300),
                           placeholder: (context, url) => Shimmer.fromColors(
                             baseColor: AppColors.surfaceElevated,
                             highlightColor: AppColors.border,
