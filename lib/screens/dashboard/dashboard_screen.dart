@@ -75,17 +75,19 @@ class DashboardScreen extends ConsumerWidget {
             if (currentUser.isManager) ...[
               _buildAddProjectButton(context, ref, currentUser),
               const SizedBox(height: 16),
-              if (selectedTab != ProjectStatus.practice) ...[
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: _buildStatusFilter(context, ref),
-                ),
-                const SizedBox(height: 16),
-              ],
             ],
 
             // ─── Filter Bar ────────────────────────────
             const DashboardFilterBar(),
+
+            // ─── Status Filter (Manager only) ──────────
+            if (currentUser.isManager && selectedTab != ProjectStatus.practice) ...[
+              Align(
+                alignment: Alignment.centerRight,
+                child: _buildStatusFilter(context, ref),
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // ─── Project List ──────────────────────────
             Expanded(
