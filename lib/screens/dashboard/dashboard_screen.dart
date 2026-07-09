@@ -12,9 +12,12 @@ import '../../providers/auth_provider.dart';
 import '../../providers/project_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../services/auth_service.dart';
+import 'package:intl/intl.dart';
+
 import '../project/create_project_dialog.dart';
 import '../settings/commission_settings_dialog.dart';
 import '../settings/telegram_link_widget.dart';
+import 'widgets/completed_project_card.dart';
 import 'widgets/project_card.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -463,10 +466,64 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildProjectList(
       BuildContext context, WidgetRef ref, List<ProjectModel> projects, currentUser) {
+    final selectedTab = ref.watch(selectedTabProvider);
+    if (selectedTab == ProjectStatus.completed) {
+      return _buildCompletedProjectList(context, ref, projects);
+    }
+
     if (currentUser.isManager) {
       return _buildManagerProjectList(context, ref, projects);
     }
     return _buildMemberProjectList(context, projects, currentUser);
+  }
+
+  Widget _buildCompletedProjectList(
+      BuildContext context, WidgetRef ref, List<ProjectModel> projects) {
+    // Sort projects by date descending
+    final sortedProjects = List<ProjectModel>.from(projects)
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+    // Group by month
+    final Map<String, List<ProjectModel>> grouped = {};
+    for (var project in sortedProjects) {
+      final month = DateFormat('MMMM').format(project.updatedAt);
+      if (!grouped.containsKey(month)) {
+        grouped[month] = [];
+      }
+      grouped[month]!.add(project);
+    }
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: grouped.entries.map((entry) {
+          final month = entry.key;
+          final monthProjects = entry.value;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _sectionHeader(month),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 400,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 1.6,
+                ),
+                itemCount: monthProjects.length,
+                itemBuilder: (context, index) {
+                  return CompletedProjectCard(project: monthProjects[index]);
+                },
+              ),
+              const SizedBox(height: 24),
+            ],
+          );
+        }).toList(),
+      ),
+    );
   }
 
   Widget _buildManagerProjectList(
