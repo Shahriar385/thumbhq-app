@@ -947,20 +947,20 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.error.withOpacity(0.1),
+        color: AppColors.info.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.error.withOpacity(0.5)),
+        border: Border.all(color: AppColors.info.withOpacity(0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              Icon(Icons.feedback_outlined, color: AppColors.error, size: 20),
+              Icon(Icons.feedback_outlined, color: AppColors.info, size: 20),
               SizedBox(width: 8),
               Text('Revision Requested',
                   style: TextStyle(
-                      color: AppColors.error,
+                      color: AppColors.info,
                       fontWeight: FontWeight.bold,
                       fontSize: 14)),
             ],
