@@ -776,15 +776,17 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   ),
                 )),
           ],
-          onChanged: (uid) async {
-            final firestoreService = ref.read(firestoreServiceProvider);
-            if (uid == null) {
-              // Unassign strategist (we can set to empty string or handle logic)
-              await firestoreService.assignStrategist(project.id, '');
-            } else {
-              await firestoreService.assignStrategist(project.id, uid);
-            }
-          },
+          onChanged: project.status == ProjectStatus.completed
+              ? null
+              : (uid) async {
+                  final firestoreService = ref.read(firestoreServiceProvider);
+                  if (uid == null) {
+                    // Unassign strategist (we can set to empty string or handle logic)
+                    await firestoreService.assignStrategist(project.id, '');
+                  } else {
+                    await firestoreService.assignStrategist(project.id, uid);
+                  }
+                },
         ),
       ),
     );
@@ -833,14 +835,16 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                   ),
                 )),
           ],
-          onChanged: (uid) async {
-            final firestoreService = ref.read(firestoreServiceProvider);
-            if (uid == null) {
-              await firestoreService.assignDesigner(project.id, '');
-            } else {
-              await firestoreService.assignDesigner(project.id, uid);
-            }
-          },
+          onChanged: project.status == ProjectStatus.completed
+              ? null
+              : (uid) async {
+                  final firestoreService = ref.read(firestoreServiceProvider);
+                  if (uid == null) {
+                    await firestoreService.assignDesigner(project.id, '');
+                  } else {
+                    await firestoreService.assignDesigner(project.id, uid);
+                  }
+                },
         ),
       ),
     );
