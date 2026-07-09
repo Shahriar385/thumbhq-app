@@ -285,6 +285,40 @@ exports.onProjectUpdated = onDocumentUpdated("projects/{projectId}", async (even
         );
       }
     }
+
+    // ── Brief Updated ─────────────────────────────────────────────
+    if (JSON.stringify(before.brief) !== JSON.stringify(after.brief)) {
+      const managersSnap = await db
+        .collection("users")
+        .where("role", "==", "manager")
+        .get();
+      for (const doc of managersSnap.docs) {
+        const manager = doc.data();
+        if (manager.telegramChatId) {
+          await sendTelegramMessage(
+            manager.telegramChatId,
+            `📝 <b>Brief Saved</b>\n\nProject: <b>${projectTitle}</b>\nThe brief for this project has been updated.`
+          );
+        }
+      }
+    }
+
+    // ── Final Design Updated ──────────────────────────────────────
+    if (JSON.stringify(before.finalDesign) !== JSON.stringify(after.finalDesign)) {
+      const managersSnap = await db
+        .collection("users")
+        .where("role", "==", "manager")
+        .get();
+      for (const doc of managersSnap.docs) {
+        const manager = doc.data();
+        if (manager.telegramChatId) {
+          await sendTelegramMessage(
+            manager.telegramChatId,
+            `🖼️ <b>Final Design Saved</b>\n\nProject: <b>${projectTitle}</b>\nThe final design for this project has been updated.`
+          );
+        }
+      }
+    }
   });
 
 // ─── TRIGGER: New chat message ──────────────────────────────────────────────
