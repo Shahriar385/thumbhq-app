@@ -737,12 +737,14 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     final isValidValue = users.any((u) => u.uid == project.strategistId);
     final value = isValidValue ? project.strategistId : null;
 
+    final isCompleted = project.status == ProjectStatus.completed;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: isCompleted ? AppColors.border.withAlpha(100) : AppColors.border),
         borderRadius: BorderRadius.circular(8),
-        color: AppColors.surfaceElevated,
+        color: isCompleted ? AppColors.background : AppColors.surfaceElevated,
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -768,8 +770,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                           radius: 12),
                       const SizedBox(width: 8),
                       Text(u.displayName,
-                          style: const TextStyle(
-                              color: AppColors.textPrimary, fontSize: 13)),
+                          style: TextStyle(
+                              color: isCompleted ? AppColors.textMuted : AppColors.textPrimary, 
+                              fontSize: 13)),
                       const SizedBox(width: 8),
                       RoleBadge(role: u.role),
                     ],
@@ -796,12 +799,14 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
     final isValidValue = users.any((u) => u.uid == project.designerId);
     final value = isValidValue ? project.designerId : null;
 
+    final isCompleted = project.status == ProjectStatus.completed;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: isCompleted ? AppColors.border.withAlpha(100) : AppColors.border),
         borderRadius: BorderRadius.circular(8),
-        color: AppColors.surfaceElevated,
+        color: isCompleted ? AppColors.background : AppColors.surfaceElevated,
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -827,8 +832,9 @@ class _ProjectDetailScreenState extends ConsumerState<ProjectDetailScreen> {
                           radius: 12),
                       const SizedBox(width: 8),
                       Text(u.displayName,
-                          style: const TextStyle(
-                              color: AppColors.textPrimary, fontSize: 13)),
+                          style: TextStyle(
+                              color: isCompleted ? AppColors.textMuted : AppColors.textPrimary, 
+                              fontSize: 13)),
                       const SizedBox(width: 8),
                       RoleBadge(role: u.role),
                     ],
