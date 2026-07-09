@@ -19,6 +19,7 @@ class DashboardFilterBar extends ConsumerWidget {
     final isManager = currentUser.isManager;
 
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
