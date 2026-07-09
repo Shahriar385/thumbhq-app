@@ -5,7 +5,8 @@ enum UserRole {
   strategist('strategist', 'Strategist'),
   leadDesigner('lead_designer', 'Lead Designer'),
   coreDesigner('core_designer', 'Core Designer'),
-  juniorDesigner('junior_designer', 'Junior Designer');
+  juniorDesigner('junior_designer', 'Junior Designer'),
+  kamla('kamla', 'Kamla');
 
   const UserRole(this.value, this.label);
   final String value;
@@ -24,6 +25,7 @@ enum UserRole {
   bool get isManager => this == manager;
   bool get isStrategist => this == strategist;
   bool get isPending => this == pending;
+  bool get isKamla => this == kamla;
 }
 
 /// Project status

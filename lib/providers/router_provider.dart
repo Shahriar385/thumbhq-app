@@ -10,6 +10,7 @@ import '../screens/project/project_detail_screen.dart';
 import '../screens/team/team_screen.dart';
 import '../screens/client/client_screen.dart';
 import '../screens/analytics/analytics_screen.dart';
+import '../screens/kicked/kicked_screen.dart';
 import 'auth_provider.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -34,6 +35,17 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Logged in, on login page → redirect based on role
       if (location == '/login') {
+        if (user.isPending) return '/pending';
+        return '/dashboard';
+      }
+
+      // Kamla user trying to access anything other than kicked
+      if (user.isKamla && location != '/kicked') {
+        return '/kicked';
+      }
+
+      // Non-kamla user on kicked page -> go to dashboard (or pending)
+      if (!user.isKamla && location == '/kicked') {
         if (user.isPending) return '/pending';
         return '/dashboard';
       }
@@ -63,6 +75,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/pending',
         builder: (context, state) => const PendingScreen(),
+      ),
+      GoRoute(
+        path: '/kicked',
+        builder: (context, state) => const KickedScreen(),
       ),
       GoRoute(
         path: '/dashboard',

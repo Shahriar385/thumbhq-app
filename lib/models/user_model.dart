@@ -27,6 +27,7 @@ class UserModel {
   bool get isStrategist => role.isStrategist;
   bool get isDesigner => role.isDesigner;
   bool get isPending => role.isPending;
+  bool get isKamla => role.isKamla;
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

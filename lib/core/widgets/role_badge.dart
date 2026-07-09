@@ -41,6 +41,8 @@ class RoleBadge extends StatelessWidget {
         return const Color(0xFF48c9b0);
       case UserRole.pending:
         return AppColors.textMuted;
+      case UserRole.kamla:
+        return AppColors.error;
     }
   }
 }
