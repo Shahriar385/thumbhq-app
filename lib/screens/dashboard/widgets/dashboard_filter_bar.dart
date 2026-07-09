@@ -34,7 +34,7 @@ class DashboardFilterBar extends ConsumerWidget {
         children: [
           // Project Title Search (Available to everyone)
           SizedBox(
-            width: isManager ? 250 : double.infinity,
+            width: double.infinity,
             child: TextField(
               style: const TextStyle(color: AppColors.textPrimary),
               decoration: InputDecoration(

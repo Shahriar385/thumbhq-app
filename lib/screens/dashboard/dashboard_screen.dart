@@ -71,10 +71,6 @@ class DashboardScreen extends ConsumerWidget {
               },
             ),
             const SizedBox(height: 24),
-            
-            // ─── Filter Bar ────────────────────────────
-            const DashboardFilterBar(),
-
             // ─── Add Project (Manager only) ────────────
             if (currentUser.isManager) ...[
               _buildAddProjectButton(context, ref, currentUser),
@@ -87,6 +83,9 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
               ],
             ],
+
+            // ─── Filter Bar ────────────────────────────
+            const DashboardFilterBar(),
 
             // ─── Project List ──────────────────────────
             Expanded(
