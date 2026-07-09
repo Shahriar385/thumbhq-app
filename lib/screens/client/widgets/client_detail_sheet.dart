@@ -82,7 +82,7 @@ class _ClientDetailSheetState extends ConsumerState<ClientDetailSheet> {
     final retentionDays = _calculateRetentionDays();
     final balance = widget.client.totalPaid - widget.client.totalWorked;
     final thumbBalance = widget.client.averagePayout > 0
-        ? widget.client.totalWorked / widget.client.averagePayout
+        ? balance / widget.client.averagePayout
         : 0.0;
 
     return Container(
@@ -224,6 +224,7 @@ class _ClientDetailSheetState extends ConsumerState<ClientDetailSheet> {
                           'Thumbnail Balance',
                           '${thumbBalance.toStringAsFixed(1)} units',
                           Icons.image,
+                          valueColor: thumbBalance >= 0 ? AppColors.approved : AppColors.error,
                         ),
                       ),
                     ],
