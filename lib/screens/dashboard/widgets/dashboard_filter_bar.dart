@@ -27,64 +27,60 @@ class DashboardFilterBar extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Wrap(
+        spacing: 16,
+        runSpacing: 16,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           // Project Title Search (Available to everyone)
-          TextField(
-            style: const TextStyle(color: AppColors.textPrimary),
-            decoration: InputDecoration(
-              hintText: 'Search by title...',
-              hintStyle: const TextStyle(color: AppColors.textMuted),
-              prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
-              filled: true,
-              fillColor: AppColors.inputBackground,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
+          SizedBox(
+            width: double.infinity,
+            child: TextField(
+              style: const TextStyle(color: AppColors.textPrimary),
+              decoration: InputDecoration(
+                hintText: 'Search by title...',
+                hintStyle: const TextStyle(color: AppColors.textMuted),
+                prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+                filled: true,
+                fillColor: AppColors.inputBackground,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
               ),
+              onChanged: (value) {
+                ref.read(searchQueryProvider.notifier).state = value;
+              },
             ),
-            onChanged: (value) {
-              ref.read(searchQueryProvider.notifier).state = value;
-            },
           ),
           
           if (isManager) ...[
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              alignment: WrapAlignment.end,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                // Strategist Dropdown
-                _buildStrategistDropdown(ref),
-                
-                // Designer Dropdown
-                _buildDesignerDropdown(ref),
-                
-                // Client Dropdown
-                _buildClientDropdown(ref),
-                
-                // Clear Filters Button
-                if (_hasActiveFilters(ref))
-                  TextButton.icon(
-                    onPressed: () {
-                      ref.read(searchQueryProvider.notifier).state = '';
-                      ref.read(selectedStrategistFilterProvider.notifier).state = null;
-                      ref.read(selectedDesignerFilterProvider.notifier).state = null;
-                      ref.read(selectedClientFilterProvider.notifier).state = null;
-                      ref.read(selectedStatusFilterProvider.notifier).state = null;
-                    },
-                    icon: const Icon(Icons.clear, size: 16),
-                    label: const Text('Clear Filters'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                    ),
-                  ),
-              ],
-            ),
+            // Strategist Dropdown
+            _buildStrategistDropdown(ref),
+            
+            // Designer Dropdown
+            _buildDesignerDropdown(ref),
+            
+            // Client Dropdown
+            _buildClientDropdown(ref),
+            
+            // Clear Filters Button
+            if (_hasActiveFilters(ref))
+              TextButton.icon(
+                onPressed: () {
+                  ref.read(searchQueryProvider.notifier).state = '';
+                  ref.read(selectedStrategistFilterProvider.notifier).state = null;
+                  ref.read(selectedDesignerFilterProvider.notifier).state = null;
+                  ref.read(selectedClientFilterProvider.notifier).state = null;
+                  ref.read(selectedStatusFilterProvider.notifier).state = null;
+                },
+                icon: const Icon(Icons.clear, size: 16),
+                label: const Text('Clear Filters'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.error,
+                ),
+              ),
           ],
         ],
       ),
@@ -99,7 +95,7 @@ class DashboardFilterBar extends ConsumerWidget {
   }
 
   Widget _buildStrategistDropdown(WidgetRef ref) {
-    final strategistsAsync = ref.watch(strategistsProvider);
+    final membersAsync = ref.watch(activeMembersProvider);
     final selectedValue = ref.watch(selectedStrategistFilterProvider);
 
     return Container(
@@ -121,7 +117,7 @@ class DashboardFilterBar extends ConsumerWidget {
               value: null,
               child: Text('All Strategists', style: TextStyle(color: AppColors.textPrimary)),
             ),
-            ...strategistsAsync.when(
+            ...membersAsync.when(
               data: (users) => users.map((u) => DropdownMenuItem(
                 value: u.uid,
                 child: Text(u.displayName, style: const TextStyle(color: AppColors.textPrimary)),
@@ -139,7 +135,7 @@ class DashboardFilterBar extends ConsumerWidget {
   }
 
   Widget _buildDesignerDropdown(WidgetRef ref) {
-    final designersAsync = ref.watch(designersProvider);
+    final membersAsync = ref.watch(activeMembersProvider);
     final selectedValue = ref.watch(selectedDesignerFilterProvider);
 
     return Container(
@@ -161,7 +157,7 @@ class DashboardFilterBar extends ConsumerWidget {
               value: null,
               child: Text('All Designers', style: TextStyle(color: AppColors.textPrimary)),
             ),
-            ...designersAsync.when(
+            ...membersAsync.when(
               data: (users) => users.map((u) => DropdownMenuItem(
                 value: u.uid,
                 child: Text(u.displayName, style: const TextStyle(color: AppColors.textPrimary)),

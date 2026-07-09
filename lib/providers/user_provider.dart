@@ -13,6 +13,13 @@ final allUsersProvider = StreamProvider<List<UserModel>>((ref) {
 
 // ─── Users by Role ───────────────────────────────────────────────
 
+final activeMembersProvider = Provider<AsyncValue<List<UserModel>>>((ref) {
+  final usersAsync = ref.watch(allUsersProvider);
+  return usersAsync.whenData(
+    (users) => users.where((u) => !u.isPending && !u.isKamla).toList(),
+  );
+});
+
 final strategistsProvider = Provider<AsyncValue<List<UserModel>>>((ref) {
   final usersAsync = ref.watch(allUsersProvider);
   return usersAsync.whenData(
