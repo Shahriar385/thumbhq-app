@@ -1,13 +1,19 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/full_screen_image.dart';
 import '../../../models/message_model.dart';
 import '../../../models/project_model.dart';
 import '../../../models/user_model.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/message_provider.dart';
+import '../../../services/storage_service.dart';
 
 class ProjectChatSheet extends ConsumerStatefulWidget {
   final ProjectModel project;
@@ -27,6 +33,8 @@ class _ProjectChatSheetState extends ConsumerState<ProjectChatSheet> {
   final _messageController = TextEditingController();
   bool _isSending = false;
   MessageModel? _replyingTo;
+  Uint8List? _selectedImageBytes;
+  String? _selectedImageName;
 
   @override
   void dispose() {
@@ -34,13 +42,37 @@ class _ProjectChatSheetState extends ConsumerState<ProjectChatSheet> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: ImageSource.gallery);
+    if (file == null) return;
+    
+    final bytes = await file.readAsBytes();
+    setState(() {
+      _selectedImageBytes = bytes;
+      _selectedImageName = file.name;
+    });
+  }
+
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty && _selectedImageBytes == null) return;
 
     setState(() => _isSending = true);
 
     try {
+      String? imageUrl;
+      if (_selectedImageBytes != null && _selectedImageName != null) {
+        final storageService = StorageService();
+        final urls = await storageService.uploadImages(
+          path: 'projects/${widget.project.id}/chat',
+          files: [MapEntry(_selectedImageName!, _selectedImageBytes!)],
+        );
+        if (urls.isNotEmpty) {
+          imageUrl = urls.first;
+        }
+      }
+
       final message = MessageModel(
         id: '',
         projectId: widget.project.id,
@@ -48,6 +80,7 @@ class _ProjectChatSheetState extends ConsumerState<ProjectChatSheet> {
         senderName: widget.currentUser.displayName,
         senderRole: widget.currentUser.role.label,
         content: text,
+        imageUrl: imageUrl,
         timestamp: DateTime.now(),
         replyToId: _replyingTo?.id,
         replyToName: _replyingTo?.senderName,
@@ -57,7 +90,11 @@ class _ProjectChatSheetState extends ConsumerState<ProjectChatSheet> {
       final firestoreService = ref.read(firestoreServiceProvider);
       await firestoreService.sendMessage(widget.project.id, message);
       _messageController.clear();
-      setState(() => _replyingTo = null);
+      setState(() {
+        _replyingTo = null;
+        _selectedImageBytes = null;
+        _selectedImageName = null;
+      });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -208,8 +245,50 @@ class _ProjectChatSheetState extends ConsumerState<ProjectChatSheet> {
                       ],
                     ),
                   ),
+                if (_selectedImageBytes != null)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    alignment: Alignment.centerLeft,
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Image.memory(_selectedImageBytes!, fit: BoxFit.cover),
+                        ),
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: () => setState(() {
+                              _selectedImageBytes = null;
+                              _selectedImageName = null;
+                            }),
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: AppColors.error,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.close, size: 12, color: AppColors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 Row(
                   children: [
+                    IconButton(
+                      icon: const Icon(Icons.image_outlined, color: AppColors.textMuted),
+                      onPressed: _pickImage,
+                    ),
+                    const SizedBox(width: 4),
                     Expanded(
                   child: TextField(
                     controller: _messageController,
@@ -404,12 +483,48 @@ class _MessageBubbleState extends State<_MessageBubble> {
                         bottomRight: Radius.circular(isMe ? 4 : 16),
                       ),
                     ),
-                    child: Text(
-                      message.content,
-                      style: TextStyle(
-                        color: isMe ? AppColors.white : AppColors.textPrimary,
-                        fontSize: 14,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (message.imageUrl != null)
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => FullScreenImage(imageUrl: message.imageUrl!),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: message.content.isNotEmpty ? 8 : 0),
+                              constraints: const BoxConstraints(maxHeight: 200, maxWidth: 250),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: CachedNetworkImage(
+                                imageUrl: message.imageUrl!,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  color: AppColors.background,
+                                  width: 200,
+                                  height: 200,
+                                  child: const Center(child: CircularProgressIndicator()),
+                                ),
+                                errorWidget: (context, url, error) => const Icon(Icons.error),
+                              ),
+                            ),
+                          ),
+                        if (message.content.isNotEmpty)
+                          Text(
+                            message.content,
+                            style: TextStyle(
+                              color: isMe ? AppColors.white : AppColors.textPrimary,
+                              fontSize: 14,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 4),

@@ -7,6 +7,7 @@ class MessageModel {
   final String senderName;
   final String senderRole;
   final String content;
+  final String? imageUrl;
   final DateTime timestamp;
   
   // Reply fields
@@ -21,6 +22,7 @@ class MessageModel {
     required this.senderName,
     required this.senderRole,
     required this.content,
+    this.imageUrl,
     required this.timestamp,
     this.replyToId,
     this.replyToName,
@@ -36,6 +38,7 @@ class MessageModel {
       senderName: data['senderName'] ?? '',
       senderRole: data['senderRole'] ?? '',
       content: data['content'] ?? '',
+      imageUrl: data['imageUrl'],
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       replyToId: data['replyToId'],
       replyToName: data['replyToName'],
@@ -50,6 +53,7 @@ class MessageModel {
       'senderName': senderName,
       'senderRole': senderRole,
       'content': content,
+      if (imageUrl != null) 'imageUrl': imageUrl,
       'timestamp': Timestamp.fromDate(timestamp),
       if (replyToId != null) 'replyToId': replyToId,
       if (replyToName != null) 'replyToName': replyToName,
