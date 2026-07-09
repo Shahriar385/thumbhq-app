@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import '../project/create_project_dialog.dart';
 import '../settings/commission_settings_dialog.dart';
 import '../settings/telegram_link_widget.dart';
+import 'widgets/dashboard_filter_bar.dart';
 import 'widgets/completed_project_card.dart';
 import 'widgets/project_card.dart';
 
@@ -70,6 +71,9 @@ class DashboardScreen extends ConsumerWidget {
               },
             ),
             const SizedBox(height: 24),
+            
+            // ─── Filter Bar ────────────────────────────
+            const DashboardFilterBar(),
 
             // ─── Add Project (Manager only) ────────────
             if (currentUser.isManager) ...[

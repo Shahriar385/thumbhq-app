@@ -37,13 +37,22 @@ final selectedTabProvider = StateProvider<ProjectStatus>((ref) {
 
 // ─── Filtered Projects (for dashboard) ───────────────────────────
 
-// ─── Selected Status Filter ──────────────────────────────────────
+// ─── Filters ──────────────────────────────────────────────────────
 final selectedStatusFilterProvider = StateProvider<String?>((ref) => null);
+final searchQueryProvider = StateProvider<String>((ref) => '');
+final selectedStrategistFilterProvider = StateProvider<String?>((ref) => null);
+final selectedDesignerFilterProvider = StateProvider<String?>((ref) => null);
+final selectedClientFilterProvider = StateProvider<String?>((ref) => null);
 
-/// Projects filtered by the selected tab, status filter, and the user's role/assignment
+/// Projects filtered by the selected tab, status filter, search query, assigned roles, and clients
 final filteredProjectsProvider = Provider<AsyncValue<List<ProjectModel>>>((ref) {
   final selectedTab = ref.watch(selectedTabProvider);
   final selectedStatus = ref.watch(selectedStatusFilterProvider);
+  final searchQuery = ref.watch(searchQueryProvider).toLowerCase();
+  final selectedStrategist = ref.watch(selectedStrategistFilterProvider);
+  final selectedDesigner = ref.watch(selectedDesignerFilterProvider);
+  final selectedClient = ref.watch(selectedClientFilterProvider);
+  
   final projectsAsync = ref.watch(projectsByStatusProvider(selectedTab));
   final currentUser = ref.watch(currentUserProvider).value;
 
@@ -71,6 +80,22 @@ final filteredProjectsProvider = Provider<AsyncValue<List<ProjectModel>>>((ref) 
         }
         return true;
       }).toList();
+    }
+
+    if (searchQuery.isNotEmpty) {
+      filtered = filtered.where((p) => p.title.toLowerCase().contains(searchQuery)).toList();
+    }
+    
+    if (selectedStrategist != null) {
+      filtered = filtered.where((p) => p.strategistId == selectedStrategist).toList();
+    }
+    
+    if (selectedDesigner != null) {
+      filtered = filtered.where((p) => p.designerId == selectedDesigner).toList();
+    }
+    
+    if (selectedClient != null) {
+      filtered = filtered.where((p) => p.clientId == selectedClient).toList();
     }
 
     // Manager sees all projects
