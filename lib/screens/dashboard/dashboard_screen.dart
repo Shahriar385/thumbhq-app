@@ -65,6 +65,8 @@ class DashboardScreen extends ConsumerWidget {
               onTap: (index) {
                 ref.read(selectedTabProvider.notifier).state =
                     ProjectStatus.values[index];
+                // Reset filter when switching tabs
+                ref.read(selectedStatusFilterProvider.notifier).state = null;
               },
             ),
             const SizedBox(height: 24),
@@ -73,11 +75,13 @@ class DashboardScreen extends ConsumerWidget {
             if (currentUser.isManager) ...[
               _buildAddProjectButton(context, ref, currentUser),
               const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerRight,
-                child: _buildStatusFilter(context, ref),
-              ),
-              const SizedBox(height: 16),
+              if (selectedTab != ProjectStatus.practice) ...[
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: _buildStatusFilter(context, ref),
+                ),
+                const SizedBox(height: 16),
+              ],
             ],
 
             // ─── Project List ──────────────────────────
@@ -309,8 +313,17 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildStatusFilter(BuildContext context, WidgetRef ref) {
+    final selectedTab = ref.watch(selectedTabProvider);
+    final isCompleted = selectedTab == ProjectStatus.completed;
+    
+    final statuses = isCompleted
+        ? ['All', 'Practice', 'Paid']
+        : ['All Statuses', 'Queue', 'In Revision', 'Submitted', 'Needs Approval'];
+
     final selectedStatus = ref.watch(selectedStatusFilterProvider);
-    final statuses = ['All Statuses', 'Queue', 'In Revision', 'Submitted', 'Needs Approval'];
+    final value = selectedStatus != null && statuses.contains(selectedStatus)
+        ? selectedStatus
+        : statuses.first;
 
     return Container(
       height: 36,
@@ -322,7 +335,7 @@ class DashboardScreen extends ConsumerWidget {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
-          value: selectedStatus ?? 'All Statuses',
+          value: value,
           icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
           dropdownColor: AppColors.surfaceElevated,
           style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),

@@ -51,7 +51,7 @@ final filteredProjectsProvider = Provider<AsyncValue<List<ProjectModel>>>((ref) 
     if (currentUser == null) return [];
 
     var filtered = projects;
-    if (selectedStatus != null && selectedStatus != 'All Statuses') {
+    if (selectedStatus != null && selectedStatus != 'All Statuses' && selectedStatus != 'All') {
       filtered = filtered.where((p) {
         if (selectedStatus == 'Needs Approval') {
           return p.approvalStatus == ApprovalStatus.needsApproval;
@@ -64,6 +64,10 @@ final filteredProjectsProvider = Provider<AsyncValue<List<ProjectModel>>>((ref) 
         } else if (selectedStatus == 'Queue') {
           return p.strategistStatus == AssignmentStatus.assigned ||
                  p.designerStatus == AssignmentStatus.assigned;
+        } else if (selectedStatus == 'Practice') {
+          return p.clientId == null || p.clientId!.isEmpty;
+        } else if (selectedStatus == 'Paid') {
+          return p.clientId != null && p.clientId!.isNotEmpty;
         }
         return true;
       }).toList();

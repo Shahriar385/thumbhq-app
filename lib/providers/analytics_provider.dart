@@ -45,9 +45,11 @@ final analyticsDataProvider = Provider<AnalyticsData>((ref) {
   // Helper map for client ticket sizes
   final clientTicketSizes = {for (var c in clients) c.id: c.averagePayout};
 
-  // 1. Total projects done this month
+  // 1. Total projects done this month (exclude practice/internal projects without clients)
   final completedThisMonth = projects.where((p) => 
     p.status == ProjectStatus.completed && 
+    p.clientId != null && 
+    p.clientId!.isNotEmpty &&
     p.updatedAt.isAfter(startOfMonth)
   ).toList();
 
