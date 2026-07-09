@@ -100,16 +100,16 @@ final analyticsDataProvider = Provider<AnalyticsData>((ref) {
     }
   }
 
-  // 6. Designer commission this month and by month
+  // 6. Commissions this month and by month
   final designerCommissionsMap = <String, double>{};
   final commissionsByMonth = <int, double>{};
   double totalDesignerCostThisMonth = 0.0;
   for (var c in commissions) {
+    if (c.createdAt.year == now.year) {
+      final month = c.createdAt.month;
+      commissionsByMonth[month] = (commissionsByMonth[month] ?? 0.0) + c.amount;
+    }
     if (c.role == 'designer') {
-      if (c.createdAt.year == now.year) {
-        final month = c.createdAt.month;
-        commissionsByMonth[month] = (commissionsByMonth[month] ?? 0.0) + c.amount;
-      }
       if (c.createdAt.isAfter(startOfMonth)) {
         final name = getUserName(c.userId);
         designerCommissionsMap[name] = (designerCommissionsMap[name] ?? 0.0) + c.amount;
