@@ -164,54 +164,56 @@ class _CreateProjectDialogState extends ConsumerState<CreateProjectDialog> {
             const SizedBox(height: 18),
 
             // Client
-            const Text(
-              'Client',
-              style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 6),
-            Consumer(
-              builder: (context, ref, child) {
-                final clientsAsync = ref.watch(clientsProvider);
-                return clientsAsync.when(
-                  data: (clients) {
-                    if (clients.isEmpty) {
-                      return const Text(
-                        'No clients available. Please add a client first from the dashboard.',
-                        style: TextStyle(color: AppColors.textMuted, fontSize: 13),
-                      );
-                    }
-                    // Validate that the selected name still exists in the list
-                    final isValidSelection = _selectedClientId != null &&
-                        clients.any((c) => c.id == _selectedClientId);
-                    
-                    return DropdownButtonFormField<String>(
-                      value: isValidSelection ? _selectedClientId : null,
-                      decoration: const InputDecoration(hintText: 'Select Client'),
-                      dropdownColor: AppColors.surfaceElevated,
-                      style: const TextStyle(color: AppColors.textPrimary),
-                      items: clients.map((client) {
-                        return DropdownMenuItem(
-                          value: client.id,
-                          child: Text(client.name, style: const TextStyle(color: AppColors.textPrimary)),
+            if (_status != ProjectStatus.practice) ...[
+              const Text(
+                'Client',
+                style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 6),
+              Consumer(
+                builder: (context, ref, child) {
+                  final clientsAsync = ref.watch(clientsProvider);
+                  return clientsAsync.when(
+                    data: (clients) {
+                      if (clients.isEmpty) {
+                        return const Text(
+                          'No clients available. Please add a client first from the dashboard.',
+                          style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                         );
-                      }).toList(),
-                      onChanged: (val) {
-                        setState(() {
-                          _selectedClientId = val;
-                          _selectedClientName = clients.firstWhere((c) => c.id == val).name;
-                        });
-                      },
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (e, _) => Text('Error loading clients: $e', style: const TextStyle(color: AppColors.error)),
-                );
-              },
-            ),
-            const SizedBox(height: 18),
+                      }
+                      // Validate that the selected name still exists in the list
+                      final isValidSelection = _selectedClientId != null &&
+                          clients.any((c) => c.id == _selectedClientId);
+                      
+                      return DropdownButtonFormField<String>(
+                        value: isValidSelection ? _selectedClientId : null,
+                        decoration: const InputDecoration(hintText: 'Select Client'),
+                        dropdownColor: AppColors.surfaceElevated,
+                        style: const TextStyle(color: AppColors.textPrimary),
+                        items: clients.map((client) {
+                          return DropdownMenuItem(
+                            value: client.id,
+                            child: Text(client.name, style: const TextStyle(color: AppColors.textPrimary)),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedClientId = val;
+                            _selectedClientName = clients.firstWhere((c) => c.id == val).name;
+                          });
+                        },
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Text('Error loading clients: $e', style: const TextStyle(color: AppColors.error)),
+                  );
+                },
+              ),
+              const SizedBox(height: 18),
+            ],
 
             // Deadline
             const Text(
@@ -265,7 +267,13 @@ class _CreateProjectDialogState extends ConsumerState<CreateProjectDialog> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: GestureDetector(
-                    onTap: () => setState(() => _status = status),
+                    onTap: () => setState(() {
+                      _status = status;
+                      if (_status == ProjectStatus.practice) {
+                        _selectedClientId = null;
+                        _selectedClientName = null;
+                      }
+                    }),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 8),

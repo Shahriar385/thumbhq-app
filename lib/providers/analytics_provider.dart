@@ -23,7 +23,9 @@ final allRevenuesProvider = StreamProvider<List<RevenueModel>>((ref) {
 
 /// Computes all analytics data from streams
 final analyticsDataProvider = Provider<AnalyticsData>((ref) {
-  final projects = ref.watch(allProjectsProvider).value ?? [];
+  final projects = (ref.watch(allProjectsProvider).value ?? [])
+      .where((p) => p.status != ProjectStatus.practice)
+      .toList();
   final commissions = ref.watch(commissionsProvider).value ?? [];
   final revenues = ref.watch(allRevenuesProvider).value ?? [];
   final clients = ref.watch(clientsProvider).value ?? [];
