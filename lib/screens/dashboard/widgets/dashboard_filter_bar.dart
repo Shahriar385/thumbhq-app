@@ -242,9 +242,8 @@ class DashboardFilterBar extends ConsumerWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           value: value,
-          icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+          icon: const Icon(Icons.arrow_drop_down, color: AppColors.textMuted),
           dropdownColor: AppColors.surfaceElevated,
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
           isExpanded: true,
           onChanged: (String? newValue) {
             ref.read(selectedStatusFilterProvider.notifier).state = newValue;
@@ -252,7 +251,7 @@ class DashboardFilterBar extends ConsumerWidget {
           items: statuses.map((status) {
             return DropdownMenuItem<String?>(
               value: status,
-              child: Text(status),
+              child: Text(status, style: const TextStyle(color: AppColors.textPrimary)),
             );
           }).toList(),
         ),
