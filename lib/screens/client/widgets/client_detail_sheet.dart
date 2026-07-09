@@ -77,6 +77,29 @@ class _ClientDetailSheetState extends ConsumerState<ClientDetailSheet> {
     return end.difference(widget.client.onboardingDate).inDays;
   }
 
+  String _formatRetention(int totalDays) {
+    if (totalDays <= 0) return '0 days';
+
+    int years = totalDays ~/ 365;
+    int remainingDays = totalDays % 365;
+    int months = remainingDays ~/ 30;
+    int days = remainingDays % 30;
+
+    List<String> parts = [];
+    if (years > 0) {
+      parts.add('$years year${years > 1 ? 's' : ''}');
+    }
+    if (months > 0) {
+      parts.add('$months month${months > 1 ? 's' : ''}');
+    }
+    if (days > 0) {
+      parts.add('$days day${days > 1 ? 's' : ''}');
+    }
+
+    if (parts.isEmpty) return '0 days';
+    return parts.join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final retentionDays = _calculateRetentionDays();
@@ -181,7 +204,7 @@ class _ClientDetailSheetState extends ConsumerState<ClientDetailSheet> {
                   const SizedBox(height: 12),
                   _buildInfoCard(
                     'Client Retention',
-                    '$retentionDays Days',
+                    _formatRetention(retentionDays),
                     Icons.history_toggle_off,
                   ),
                   
