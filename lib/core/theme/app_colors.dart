@@ -31,6 +31,7 @@ class AppColors {
   static const Color ongoing = Color(0xFFe6a817);
 
   // Misc
+  static const Color info = Color(0xFFe6a817);
   static const Color error = Color(0xFFe74c3c);
   static const Color white = Color(0xFFffffff);
   static const Color black = Color(0xFF000000);
