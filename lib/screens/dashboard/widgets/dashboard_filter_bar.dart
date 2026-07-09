@@ -27,60 +27,64 @@ class DashboardFilterBar extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 16,
-        crossAxisAlignment: WrapCrossAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Project Title Search (Available to everyone)
-          SizedBox(
-            width: double.infinity,
-            child: TextField(
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: InputDecoration(
-                hintText: 'Search by title...',
-                hintStyle: const TextStyle(color: AppColors.textMuted),
-                prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
-                filled: true,
-                fillColor: AppColors.inputBackground,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
+          TextField(
+            style: const TextStyle(color: AppColors.textPrimary),
+            decoration: InputDecoration(
+              hintText: 'Search by title...',
+              hintStyle: const TextStyle(color: AppColors.textMuted),
+              prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+              filled: true,
+              fillColor: AppColors.inputBackground,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
               ),
-              onChanged: (value) {
-                ref.read(searchQueryProvider.notifier).state = value;
-              },
             ),
+            onChanged: (value) {
+              ref.read(searchQueryProvider.notifier).state = value;
+            },
           ),
           
           if (isManager) ...[
-            // Strategist Dropdown
-            _buildStrategistDropdown(ref),
-            
-            // Designer Dropdown
-            _buildDesignerDropdown(ref),
-            
-            // Client Dropdown
-            _buildClientDropdown(ref),
-            
-            // Clear Filters Button
-            if (_hasActiveFilters(ref))
-              TextButton.icon(
-                onPressed: () {
-                  ref.read(searchQueryProvider.notifier).state = '';
-                  ref.read(selectedStrategistFilterProvider.notifier).state = null;
-                  ref.read(selectedDesignerFilterProvider.notifier).state = null;
-                  ref.read(selectedClientFilterProvider.notifier).state = null;
-                  ref.read(selectedStatusFilterProvider.notifier).state = null;
-                },
-                icon: const Icon(Icons.clear, size: 16),
-                label: const Text('Clear Filters'),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.error,
-                ),
-              ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                // Strategist Dropdown
+                _buildStrategistDropdown(ref),
+                
+                // Designer Dropdown
+                _buildDesignerDropdown(ref),
+                
+                // Client Dropdown
+                _buildClientDropdown(ref),
+                
+                // Clear Filters Button
+                if (_hasActiveFilters(ref))
+                  TextButton.icon(
+                    onPressed: () {
+                      ref.read(searchQueryProvider.notifier).state = '';
+                      ref.read(selectedStrategistFilterProvider.notifier).state = null;
+                      ref.read(selectedDesignerFilterProvider.notifier).state = null;
+                      ref.read(selectedClientFilterProvider.notifier).state = null;
+                      ref.read(selectedStatusFilterProvider.notifier).state = null;
+                    },
+                    icon: const Icon(Icons.clear, size: 16),
+                    label: const Text('Clear Filters'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                    ),
+                  ),
+              ],
+            ),
           ],
         ],
       ),
