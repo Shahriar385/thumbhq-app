@@ -28,62 +28,71 @@ class DashboardFilterBar extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 16,
-        crossAxisAlignment: WrapCrossAlignment.center,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Project Title Search (Available to everyone)
-          SizedBox(
-            width: double.infinity,
-            child: TextField(
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: InputDecoration(
-                hintText: 'Search by title...',
-                hintStyle: const TextStyle(color: AppColors.textMuted),
-                prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
-                filled: true,
-                fillColor: AppColors.inputBackground,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
+          Expanded(
+            child: SizedBox(
+              height: 40,
+              child: TextField(
+                style: const TextStyle(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'Search by title...',
+                  hintStyle: const TextStyle(color: AppColors.textMuted),
+                  prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+                  filled: true,
+                  fillColor: AppColors.inputBackground,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
+                onChanged: (value) {
+                  ref.read(searchQueryProvider.notifier).state = value;
+                },
               ),
-              onChanged: (value) {
-                ref.read(searchQueryProvider.notifier).state = value;
-              },
             ),
           ),
           
           if (isManager) ...[
+            const SizedBox(width: 16),
             // Strategist Dropdown
             _buildStrategistDropdown(ref),
+            const SizedBox(width: 8),
             
             // Designer Dropdown
             _buildDesignerDropdown(ref),
+            const SizedBox(width: 8),
             
             // Client Dropdown
             _buildClientDropdown(ref),
+            const SizedBox(width: 8),
             
             // Status Filter
-            if (ref.watch(selectedTabProvider) != ProjectStatus.practice)
+            if (ref.watch(selectedTabProvider) != ProjectStatus.practice) ...[
               _buildStatusDropdown(ref),
+              const SizedBox(width: 8),
+            ],
             
             // Clear Filters Button
             if (_hasActiveFilters(ref))
-              TextButton.icon(
-                onPressed: () {
-                  ref.read(searchQueryProvider.notifier).state = '';
-                  ref.read(selectedStrategistFilterProvider.notifier).state = null;
-                  ref.read(selectedDesignerFilterProvider.notifier).state = null;
-                  ref.read(selectedClientFilterProvider.notifier).state = null;
-                  ref.read(selectedStatusFilterProvider.notifier).state = null;
-                },
-                icon: const Icon(Icons.clear, size: 16),
-                label: const Text('Clear Filters'),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.error,
+              SizedBox(
+                height: 40,
+                child: TextButton.icon(
+                  onPressed: () {
+                    ref.read(searchQueryProvider.notifier).state = '';
+                    ref.read(selectedStrategistFilterProvider.notifier).state = null;
+                    ref.read(selectedDesignerFilterProvider.notifier).state = null;
+                    ref.read(selectedClientFilterProvider.notifier).state = null;
+                    ref.read(selectedStatusFilterProvider.notifier).state = null;
+                  },
+                  icon: const Icon(Icons.clear, size: 16),
+                  label: const Text('Clear'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.error,
+                  ),
                 ),
               ),
           ],
@@ -104,7 +113,8 @@ class DashboardFilterBar extends ConsumerWidget {
     final selectedValue = ref.watch(selectedStrategistFilterProvider);
 
     return Container(
-      width: 180,
+      width: 130,
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
@@ -144,7 +154,8 @@ class DashboardFilterBar extends ConsumerWidget {
     final selectedValue = ref.watch(selectedDesignerFilterProvider);
 
     return Container(
-      width: 180,
+      width: 130,
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
@@ -184,7 +195,8 @@ class DashboardFilterBar extends ConsumerWidget {
     final selectedValue = ref.watch(selectedClientFilterProvider);
 
     return Container(
-      width: 180,
+      width: 130,
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
@@ -233,7 +245,8 @@ class DashboardFilterBar extends ConsumerWidget {
         : statuses.first;
 
     return Container(
-      width: 180,
+      width: 130,
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: AppColors.inputBackground,
