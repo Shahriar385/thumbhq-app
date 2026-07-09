@@ -18,85 +18,103 @@ class DashboardFilterBar extends ConsumerWidget {
     if (currentUser == null) return const SizedBox.shrink();
 
     final isManager = currentUser.isManager;
+    final isDesktop = MediaQuery.of(context).size.width > 900;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Project Title Search (Available to everyone)
-          Expanded(
-            child: SizedBox(
-              height: 40,
-              child: TextField(
-                style: const TextStyle(color: AppColors.textPrimary),
-                decoration: InputDecoration(
-                  hintText: 'Search by title...',
-                  hintStyle: const TextStyle(color: AppColors.textMuted),
-                  prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
-                  filled: true,
-                  fillColor: AppColors.inputBackground,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
+      child: isDesktop
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(child: _buildSearchField(ref)),
+                if (isManager) ...[
+                  const SizedBox(width: 16),
+                  _buildStrategistDropdown(ref),
+                  const SizedBox(width: 8),
+                  _buildDesignerDropdown(ref),
+                  const SizedBox(width: 8),
+                  _buildClientDropdown(ref),
+                  const SizedBox(width: 8),
+                  if (ref.watch(selectedTabProvider) != ProjectStatus.practice) ...[
+                    _buildStatusDropdown(ref),
+                    const SizedBox(width: 8),
+                  ],
+                  if (_hasActiveFilters(ref)) _buildClearButton(ref),
+                ],
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSearchField(ref),
+                if (isManager) ...[
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      _buildStrategistDropdown(ref),
+                      _buildDesignerDropdown(ref),
+                      _buildClientDropdown(ref),
+                      if (ref.watch(selectedTabProvider) != ProjectStatus.practice)
+                        _buildStatusDropdown(ref),
+                      if (_hasActiveFilters(ref)) _buildClearButton(ref),
+                    ],
                   ),
-                ),
-                onChanged: (value) {
-                  ref.read(searchQueryProvider.notifier).state = value;
-                },
-              ),
+                ],
+              ],
             ),
+    );
+  }
+
+  Widget _buildSearchField(WidgetRef ref) {
+    return SizedBox(
+      height: 40,
+      child: TextField(
+        style: const TextStyle(color: AppColors.textPrimary),
+        decoration: InputDecoration(
+          hintText: 'Search by title...',
+          hintStyle: const TextStyle(color: AppColors.textMuted),
+          prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+          filled: true,
+          fillColor: AppColors.inputBackground,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
           ),
-          
-          if (isManager) ...[
-            const SizedBox(width: 16),
-            // Strategist Dropdown
-            _buildStrategistDropdown(ref),
-            const SizedBox(width: 8),
-            
-            // Designer Dropdown
-            _buildDesignerDropdown(ref),
-            const SizedBox(width: 8),
-            
-            // Client Dropdown
-            _buildClientDropdown(ref),
-            const SizedBox(width: 8),
-            
-            // Status Filter
-            if (ref.watch(selectedTabProvider) != ProjectStatus.practice) ...[
-              _buildStatusDropdown(ref),
-              const SizedBox(width: 8),
-            ],
-            
-            // Clear Filters Button
-            if (_hasActiveFilters(ref))
-              SizedBox(
-                height: 40,
-                child: TextButton.icon(
-                  onPressed: () {
-                    ref.read(searchQueryProvider.notifier).state = '';
-                    ref.read(selectedStrategistFilterProvider.notifier).state = null;
-                    ref.read(selectedDesignerFilterProvider.notifier).state = null;
-                    ref.read(selectedClientFilterProvider.notifier).state = null;
-                    ref.read(selectedStatusFilterProvider.notifier).state = null;
-                  },
-                  icon: const Icon(Icons.clear, size: 16),
-                  label: const Text('Clear'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.error,
-                  ),
-                ),
-              ),
-          ],
-        ],
+        ),
+        onChanged: (value) {
+          ref.read(searchQueryProvider.notifier).state = value;
+        },
+      ),
+    );
+  }
+
+  Widget _buildClearButton(WidgetRef ref) {
+    return SizedBox(
+      height: 40,
+      child: TextButton.icon(
+        onPressed: () {
+          ref.read(searchQueryProvider.notifier).state = '';
+          ref.read(selectedStrategistFilterProvider.notifier).state = null;
+          ref.read(selectedDesignerFilterProvider.notifier).state = null;
+          ref.read(selectedClientFilterProvider.notifier).state = null;
+          ref.read(selectedStatusFilterProvider.notifier).state = null;
+        },
+        icon: const Icon(Icons.clear, size: 16),
+        label: const Text('Clear'),
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.error,
+        ),
       ),
     );
   }
@@ -245,7 +263,7 @@ class DashboardFilterBar extends ConsumerWidget {
         : statuses.first;
 
     return Container(
-      width: 130,
+      width: 140,
       height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
