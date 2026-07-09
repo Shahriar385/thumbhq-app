@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/user_model.dart';
 import '../../../providers/auth_provider.dart';
@@ -65,6 +66,10 @@ class DashboardFilterBar extends ConsumerWidget {
             // Client Dropdown
             _buildClientDropdown(ref),
             
+            // Status Filter
+            if (ref.watch(selectedTabProvider) != ProjectStatus.practice)
+              _buildStatusDropdown(ref),
+            
             // Clear Filters Button
             if (_hasActiveFilters(ref))
               TextButton.icon(
@@ -108,14 +113,14 @@ class DashboardFilterBar extends ConsumerWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           value: selectedValue,
-          hint: const Text('All Strategists', style: TextStyle(color: AppColors.textMuted)),
+          hint: const Text('Strategist', style: TextStyle(color: AppColors.textMuted)),
           dropdownColor: AppColors.surfaceElevated,
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down, color: AppColors.textMuted),
           items: [
             const DropdownMenuItem(
               value: null,
-              child: Text('All Strategists', style: TextStyle(color: AppColors.textPrimary)),
+              child: Text('Strategist', style: TextStyle(color: AppColors.textPrimary)),
             ),
             ...membersAsync.when(
               data: (users) => users.map((u) => DropdownMenuItem(
@@ -148,14 +153,14 @@ class DashboardFilterBar extends ConsumerWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           value: selectedValue,
-          hint: const Text('All Designers', style: TextStyle(color: AppColors.textMuted)),
+          hint: const Text('Designer', style: TextStyle(color: AppColors.textMuted)),
           dropdownColor: AppColors.surfaceElevated,
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down, color: AppColors.textMuted),
           items: [
             const DropdownMenuItem(
               value: null,
-              child: Text('All Designers', style: TextStyle(color: AppColors.textPrimary)),
+              child: Text('Designer', style: TextStyle(color: AppColors.textPrimary)),
             ),
             ...membersAsync.when(
               data: (users) => users.map((u) => DropdownMenuItem(
@@ -209,6 +214,47 @@ class DashboardFilterBar extends ConsumerWidget {
           onChanged: (val) {
             ref.read(selectedClientFilterProvider.notifier).state = val;
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusDropdown(WidgetRef ref) {
+    final selectedTab = ref.watch(selectedTabProvider);
+    final isCompleted = selectedTab == ProjectStatus.completed;
+    
+    final statuses = isCompleted
+        ? ['All', 'Practice', 'Paid']
+        : ['All Statuses', 'Queue', 'In Revision', 'Submitted', 'Needs Approval'];
+
+    final selectedStatus = ref.watch(selectedStatusFilterProvider);
+    final value = selectedStatus != null && statuses.contains(selectedStatus)
+        ? selectedStatus
+        : statuses.first;
+
+    return Container(
+      width: 180,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: AppColors.inputBackground,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String?>(
+          value: value,
+          icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+          dropdownColor: AppColors.surfaceElevated,
+          style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
+          isExpanded: true,
+          onChanged: (String? newValue) {
+            ref.read(selectedStatusFilterProvider.notifier).state = newValue;
+          },
+          items: statuses.map((status) {
+            return DropdownMenuItem<String?>(
+              value: status,
+              child: Text(status),
+            );
+          }).toList(),
         ),
       ),
     );

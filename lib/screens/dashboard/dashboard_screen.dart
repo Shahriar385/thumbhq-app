@@ -80,15 +80,6 @@ class DashboardScreen extends ConsumerWidget {
             // ─── Filter Bar ────────────────────────────
             const DashboardFilterBar(),
 
-            // ─── Status Filter (Manager only) ──────────
-            if (currentUser.isManager && selectedTab != ProjectStatus.practice) ...[
-              Align(
-                alignment: Alignment.centerRight,
-                child: _buildStatusFilter(context, ref),
-              ),
-              const SizedBox(height: 16),
-            ],
-
             // ─── Project List ──────────────────────────
             Expanded(
               child: projectsAsync.when(
@@ -314,47 +305,6 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildStatusFilter(BuildContext context, WidgetRef ref) {
-    final selectedTab = ref.watch(selectedTabProvider);
-    final isCompleted = selectedTab == ProjectStatus.completed;
-    
-    final statuses = isCompleted
-        ? ['All', 'Practice', 'Paid']
-        : ['All Statuses', 'Queue', 'In Revision', 'Submitted', 'Needs Approval'];
-
-    final selectedStatus = ref.watch(selectedStatusFilterProvider);
-    final value = selectedStatus != null && statuses.contains(selectedStatus)
-        ? selectedStatus
-        : statuses.first;
-
-    return Container(
-      height: 36,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: AppColors.inputBackground,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String?>(
-          value: value,
-          icon: const Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
-          dropdownColor: AppColors.surfaceElevated,
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
-          onChanged: (String? newValue) {
-            ref.read(selectedStatusFilterProvider.notifier).state = newValue;
-          },
-          items: statuses.map((status) {
-            return DropdownMenuItem<String?>(
-              value: status,
-              child: Text(status),
-            );
-          }).toList(),
-        ),
-      ),
     );
   }
 
