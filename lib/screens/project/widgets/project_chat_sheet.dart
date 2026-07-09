@@ -63,10 +63,11 @@ class _ProjectChatSheetState extends ConsumerState<ProjectChatSheet> {
     try {
       String? imageUrl;
       if (_selectedImageBytes != null && _selectedImageName != null) {
+        final uniqueName = '${DateTime.now().millisecondsSinceEpoch}_$_selectedImageName';
         final storageService = StorageService();
         final urls = await storageService.uploadImages(
           path: 'projects/${widget.project.id}/chat',
-          files: [MapEntry(_selectedImageName!, _selectedImageBytes!)],
+          files: [MapEntry(uniqueName, _selectedImageBytes!)],
         );
         if (urls.isNotEmpty) {
           imageUrl = urls.first;

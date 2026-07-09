@@ -382,6 +382,7 @@ class FirestoreService {
       senderName: message.senderName,
       senderRole: message.senderRole,
       content: message.content,
+      imageUrl: message.imageUrl,
       timestamp: message.timestamp,
       replyToId: message.replyToId,
       replyToName: message.replyToName,
