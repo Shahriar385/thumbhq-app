@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
@@ -36,7 +37,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with RouteAwa
     setState(() {
       _isReady = false;
     });
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) {
         setState(() {
           _isReady = true;
@@ -131,7 +132,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with RouteAwa
             // ─── Project List ──────────────────────────
             Expanded(
               child: !_isReady 
-                ? const Center(child: CircularProgressIndicator())
+                ? _buildShimmerLoading()
                 : projectsAsync.when(
                     data: (projects) {
                       if (projects.isEmpty) {
@@ -149,8 +150,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with RouteAwa
                       }
                       return _buildProjectList(context, ref, projects, currentUser);
                     },
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading: () => _buildShimmerLoading(),
                     error: (e, _) => Center(
                       child: Text(
                         'Error: $e',
@@ -161,6 +161,28 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with RouteAwa
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return SingleChildScrollView(
+      child: Column(
+        children: List.generate(3, (index) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Shimmer.fromColors(
+            baseColor: AppColors.surfaceElevated,
+            highlightColor: AppColors.border,
+            child: Container(
+              width: double.infinity,
+              height: 140,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        )),
       ),
     );
   }
