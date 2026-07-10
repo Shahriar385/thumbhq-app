@@ -156,6 +156,40 @@ class FirestoreService {
 
   /// Delete project
   Future<void> deleteProject(String id, {void Function(double)? onProgress}) async {
+    // 0. Revert commissions and analytics if approved
+    try {
+      final projectDoc = await _projectsRef.doc(id).get();
+      if (projectDoc.exists) {
+        final project = ProjectModel.fromFirestore(projectDoc);
+        
+        if (project.commissionsPaid) {
+          final batch = _db.batch();
+          
+          // Revert client totalWorked
+          if (project.clientId != null && project.clientId!.isNotEmpty) {
+            final clientDoc = await _clientsRef.doc(project.clientId!).get();
+            if (clientDoc.exists) {
+               final client = ClientModel.fromFirestore(clientDoc);
+               batch.update(_clientsRef.doc(project.clientId!), {
+                 'totalWorked': FieldValue.increment(-client.averagePayout),
+                 'updatedAt': Timestamp.now(),
+               });
+            }
+          }
+          
+          // Delete all commission documents linked to this projectId
+          final commissionsSnapshot = await _commissionsRef.where('projectId', isEqualTo: id).get();
+          for (var doc in commissionsSnapshot.docs) {
+            batch.delete(doc.reference);
+          }
+          
+          await batch.commit();
+        }
+      }
+    } catch (e) {
+      print('Error reverting commissions on delete: $e');
+    }
+
     // 1. Delete all images in Storage
     try {
       final storageService = StorageService();

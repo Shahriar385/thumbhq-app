@@ -9,8 +9,9 @@ import '../../../models/project_model.dart';
 
 class CompletedProjectCard extends StatelessWidget {
   final ProjectModel project;
+  final VoidCallback? onLongPress;
 
-  const CompletedProjectCard({super.key, required this.project});
+  const CompletedProjectCard({super.key, required this.project, this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,7 @@ class CompletedProjectCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => context.push('/project/${project.id}'),
+      onLongPress: onLongPress,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

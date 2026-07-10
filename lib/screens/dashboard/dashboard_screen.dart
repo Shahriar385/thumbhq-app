@@ -340,13 +340,17 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmDeleteProject(BuildContext context, WidgetRef ref, String projectId, String title) async {
+  Future<void> _confirmDeleteProject(BuildContext context, WidgetRef ref, String projectId, String title, {bool isCompleted = false}) async {
+    final message = isCompleted
+        ? 'Are you sure you want to delete "$title"?\n\nWARNING: This will permanently undo the balances earned by the assigned Strategist and Designer and adjust analytics. This cannot be undone.'
+        : 'Are you sure you want to delete "$title"? This action cannot be undone.';
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surfaceElevated,
         title: const Text('Delete Project', style: TextStyle(color: AppColors.textPrimary)),
-        content: Text('Are you sure you want to delete "$title"? This action cannot be undone.', style: const TextStyle(color: AppColors.textPrimary)),
+        content: Text(message, style: const TextStyle(color: AppColors.textPrimary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -483,7 +487,13 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 itemCount: monthProjects.length,
                 itemBuilder: (context, index) {
-                  return CompletedProjectCard(project: monthProjects[index]);
+                  final project = monthProjects[index];
+                  return CompletedProjectCard(
+                    project: project,
+                    onLongPress: currentUser.isManager
+                        ? () => _confirmDeleteProject(context, ref, project.id, project.title, isCompleted: true)
+                        : null,
+                  );
                 },
               ),
               const SizedBox(height: 24),
