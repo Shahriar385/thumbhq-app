@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../models/project_model.dart';
@@ -95,11 +95,9 @@ class CompletedProjectCard extends StatelessWidget {
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
                           memCacheWidth: 800, // Resize image in memory to prevent lag
-                          fadeInDuration: const Duration(milliseconds: 300),
-                          placeholder: (context, url) => Shimmer.fromColors(
-                            baseColor: AppColors.surfaceElevated,
-                            highlightColor: AppColors.border,
-                            child: Container(color: Colors.white),
+                          fadeInDuration: const Duration(milliseconds: 200),
+                          placeholder: (context, url) => Container(
+                            color: AppColors.surfaceElevated,
                           ),
                           errorWidget: (context, url, error) => const Center(
                             child: Icon(Icons.image_not_supported,

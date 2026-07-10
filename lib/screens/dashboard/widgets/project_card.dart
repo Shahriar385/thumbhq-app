@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../core/constants/app_constants.dart';
@@ -205,15 +204,11 @@ class ProjectCard extends ConsumerWidget {
                     imageUrl: customImageUrl,
                     fit: BoxFit.cover,
                     memCacheWidth: 400, // Resize image in memory to prevent lag
-                    fadeInDuration: const Duration(milliseconds: 300),
-                    placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: AppColors.surfaceElevated,
-                      highlightColor: AppColors.border,
-                      child: Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        color: Colors.white,
-                      ),
+                    fadeInDuration: const Duration(milliseconds: 200),
+                    placeholder: (context, url) => Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      color: AppColors.surfaceElevated,
                     ),
                     errorWidget: (context, url, error) => const SizedBox(),
                   ),
