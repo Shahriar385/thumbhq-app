@@ -367,6 +367,10 @@ class DashboardScreen extends ConsumerWidget {
 
     if (confirm == true) {
       if (!context.mounted) return;
+      
+      final navigator = Navigator.of(context, rootNavigator: true);
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      
       final progressNotifier = ValueNotifier<double>(0.0);
       _showProgressDialog(context, progressNotifier, 'Deleting Project...');
 
@@ -376,13 +380,14 @@ class DashboardScreen extends ConsumerWidget {
         onProgress: (p) => progressNotifier.value = p,
       );
 
-      if (context.mounted) {
-        Navigator.pop(context); // Close progress dialog
-        progressNotifier.dispose();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Project "$title" deleted.')),
-        );
-      }
+      // We use the captured navigator because the original context might be
+      // unmounted if the project list rebuilds without this project.
+      navigator.pop(); // Close progress dialog
+      progressNotifier.dispose();
+      
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Project "$title" deleted.')),
+      );
     }
   }
 
