@@ -451,6 +451,9 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildCompletedProjectList(
       BuildContext context, WidgetRef ref, List<ProjectModel> projects) {
+    final currentUser = ref.watch(currentUserProvider).value;
+    if (currentUser == null) return const SizedBox.shrink();
+
     // Sort projects by date descending
     final sortedProjects = List<ProjectModel>.from(projects)
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
