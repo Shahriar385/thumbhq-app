@@ -132,7 +132,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with RouteAwa
             // ─── Project List ──────────────────────────
             Expanded(
               child: !_isReady 
-                ? _buildShimmerLoading()
+                ? _buildShimmerLoading(selectedTab)
                 : projectsAsync.when(
                     data: (projects) {
                       if (projects.isEmpty) {
@@ -150,7 +150,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with RouteAwa
                       }
                       return _buildProjectList(context, ref, projects, currentUser);
                     },
-                    loading: () => _buildShimmerLoading(),
+                    loading: () => _buildShimmerLoading(selectedTab),
                     error: (e, _) => Center(
                       child: Text(
                         'Error: $e',
@@ -165,25 +165,184 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> with RouteAwa
     );
   }
 
-  Widget _buildShimmerLoading() {
+  Widget _buildShimmerLoading(ProjectStatus selectedTab) {
+    final isDesktop = MediaQuery.of(context).size.width > 630;
+    
+    if (selectedTab == ProjectStatus.completed) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Container(width: 150, height: 20, decoration: BoxDecoration(color: AppColors.surfaceElevated, borderRadius: BorderRadius.circular(4))),
+            ),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 400,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 1.6,
+              ),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBackground,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Shimmer.fromColors(
+                    baseColor: AppColors.surfaceElevated,
+                    highlightColor: AppColors.border,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(width: 120, height: 20, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Container(width: 60, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                                const SizedBox(height: 4),
+                                Container(width: 80, height: 12, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Expanded(
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       child: Column(
-        children: List.generate(3, (index) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Shimmer.fromColors(
-            baseColor: AppColors.surfaceElevated,
-            highlightColor: AppColors.border,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Container(width: 120, height: 20, decoration: BoxDecoration(color: AppColors.surfaceElevated, borderRadius: BorderRadius.circular(4))),
+          ),
+          ...List.generate(3, (index) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
             child: Container(
               width: double.infinity,
-              height: 140,
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardBackground,
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Shimmer.fromColors(
+                baseColor: AppColors.surfaceElevated,
+                highlightColor: AppColors.border,
+                child: isDesktop 
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 2, child: _buildProjectInfoShimmer()),
+                          Expanded(
+                            flex: 3,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                _buildMemberThumbnailShimmer(),
+                                const SizedBox(width: 12),
+                                _buildMemberThumbnailShimmer(),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildProjectInfoShimmer(),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: [
+                              _buildMemberThumbnailShimmer(),
+                              _buildMemberThumbnailShimmer(),
+                            ],
+                          ),
+                        ],
+                      ),
               ),
             ),
-          ),
-        )),
+          )),
+        ],
       ),
+    );
+  }
+
+  Widget _buildProjectInfoShimmer() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(width: 200, height: 24, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+        const SizedBox(height: 8),
+        Container(width: 120, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+        const SizedBox(height: 8),
+        Container(width: 150, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+        const SizedBox(height: 16),
+        Container(
+          width: 80,
+          height: 24,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMemberThumbnailShimmer() {
+    return Column(
+      children: [
+        Container(
+          width: 144,
+          height: 81,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(width: 100, height: 14, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+        const SizedBox(height: 6),
+        Container(
+          width: 80,
+          height: 20,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ],
     );
   }
 
