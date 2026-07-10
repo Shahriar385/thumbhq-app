@@ -340,8 +340,8 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmDeleteProject(BuildContext context, WidgetRef ref, String projectId, String title, {bool isCompleted = false}) async {
-    final message = isCompleted
+  Future<void> _confirmDeleteProject(BuildContext context, WidgetRef ref, String projectId, String title, {bool showCommissionWarning = false}) async {
+    final message = showCommissionWarning
         ? 'Are you sure you want to delete "$title"?\n\nWARNING: This will permanently undo the balances earned by the assigned Strategist and Designer and adjust analytics. This cannot be undone.'
         : 'Are you sure you want to delete "$title"? This action cannot be undone.';
 
@@ -491,10 +491,11 @@ class DashboardScreen extends ConsumerWidget {
                 itemCount: monthProjects.length,
                 itemBuilder: (context, index) {
                   final project = monthProjects[index];
+                  final isPractice = project.clientId == null || project.clientId!.isEmpty;
                   return CompletedProjectCard(
                     project: project,
                     onLongPress: currentUser.isManager
-                        ? () => _confirmDeleteProject(context, ref, project.id, project.title, isCompleted: true)
+                        ? () => _confirmDeleteProject(context, ref, project.id, project.title, showCommissionWarning: !isPractice)
                         : null,
                   );
                 },
