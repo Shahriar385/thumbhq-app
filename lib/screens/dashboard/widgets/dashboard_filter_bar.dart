@@ -79,11 +79,11 @@ class DashboardFilterBar extends ConsumerWidget {
     return SizedBox(
       height: 40,
       child: TextField(
-        style: const TextStyle(color: AppColors.textPrimary),
+        style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
         decoration: InputDecoration(
           hintText: 'Search by title...',
           hintStyle: const TextStyle(color: AppColors.textMuted),
-          prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+          prefixIcon: const Icon(Icons.search, color: AppColors.textMuted, size: 20,),
           filled: true,
           fillColor: AppColors.inputBackground,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
@@ -110,8 +110,7 @@ class DashboardFilterBar extends ConsumerWidget {
           ref.read(selectedClientFilterProvider.notifier).state = null;
           ref.read(selectedStatusFilterProvider.notifier).state = null;
         },
-        icon: const Icon(Icons.clear, size: 16),
-        label: const Text('Clear'),
+        label: const Text('Clear', style: TextStyle(fontSize: 12),),
         style: TextButton.styleFrom(
           foregroundColor: AppColors.error,
         ),
@@ -131,7 +130,7 @@ class DashboardFilterBar extends ConsumerWidget {
     final selectedValue = ref.watch(selectedStrategistFilterProvider);
 
     return Container(
-      width: 130,
+      width: 105,
       height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
@@ -148,12 +147,12 @@ class DashboardFilterBar extends ConsumerWidget {
           items: [
             const DropdownMenuItem(
               value: null,
-              child: Text('Strategist', style: TextStyle(color: AppColors.textPrimary)),
+              child: Text('Strategist', style: TextStyle(color: AppColors.textPrimary, fontSize: 12)),
             ),
             ...membersAsync.when(
               data: (users) => users.map((u) => DropdownMenuItem(
                 value: u.uid,
-                child: Text(u.displayName, style: const TextStyle(color: AppColors.textPrimary)),
+                child: Text(u.displayName, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12)),
               )).toList(),
               loading: () => [],
               error: (_, __) => [],
@@ -172,7 +171,7 @@ class DashboardFilterBar extends ConsumerWidget {
     final selectedValue = ref.watch(selectedDesignerFilterProvider);
 
     return Container(
-      width: 130,
+      width: 105,
       height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
@@ -189,12 +188,12 @@ class DashboardFilterBar extends ConsumerWidget {
           items: [
             const DropdownMenuItem(
               value: null,
-              child: Text('Designer', style: TextStyle(color: AppColors.textPrimary)),
+              child: Text('Designer', style: TextStyle(color: AppColors.textPrimary, fontSize: 12)),
             ),
             ...membersAsync.when(
               data: (users) => users.map((u) => DropdownMenuItem(
                 value: u.uid,
-                child: Text(u.displayName, style: const TextStyle(color: AppColors.textPrimary)),
+                child: Text(u.displayName, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12)),
               )).toList(),
               loading: () => [],
               error: (_, __) => [],
@@ -213,7 +212,7 @@ class DashboardFilterBar extends ConsumerWidget {
     final selectedValue = ref.watch(selectedClientFilterProvider);
 
     return Container(
-      width: 130,
+      width: 110,
       height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
@@ -230,12 +229,12 @@ class DashboardFilterBar extends ConsumerWidget {
           items: [
             const DropdownMenuItem(
               value: null,
-              child: Text('All Clients', style: TextStyle(color: AppColors.textPrimary)),
+              child: Text('All Clients', style: TextStyle(color: AppColors.textPrimary, fontSize: 12)),
             ),
             ...clientsAsync.when(
               data: (clients) => clients.map((c) => DropdownMenuItem(
                 value: c.id,
-                child: Text(c.name, style: const TextStyle(color: AppColors.textPrimary)),
+                child: Text(c.name, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12)),
               )).toList(),
               loading: () => [],
               error: (_, __) => [],
@@ -263,7 +262,7 @@ class DashboardFilterBar extends ConsumerWidget {
         : statuses.first;
 
     return Container(
-      width: 140,
+      width: 120,
       height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
@@ -282,7 +281,7 @@ class DashboardFilterBar extends ConsumerWidget {
           items: statuses.map((status) {
             return DropdownMenuItem<String?>(
               value: status,
-              child: Text(status, style: const TextStyle(color: AppColors.textPrimary)),
+              child: Text(status, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12)),
             );
           }).toList(),
         ),
