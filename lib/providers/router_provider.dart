@@ -13,12 +13,15 @@ import '../screens/analytics/analytics_screen.dart';
 import '../screens/kicked/kicked_screen.dart';
 import 'auth_provider.dart';
 
+final routeObserver = RouteObserver<ModalRoute<void>>();
+
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
   final currentUser = ref.watch(currentUserProvider);
 
   return GoRouter(
     initialLocation: '/login',
+    observers: [routeObserver],
     redirect: (context, state) {
       final isLoggedIn = authState.value != null;
       final user = currentUser.value;

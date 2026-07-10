@@ -14,6 +14,7 @@ import '../../providers/user_provider.dart';
 import '../../services/auth_service.dart';
 import 'package:intl/intl.dart';
 
+import '../../providers/router_provider.dart';
 import '../project/create_project_dialog.dart';
 import '../settings/commission_settings_dialog.dart';
 import '../settings/telegram_link_widget.dart';
@@ -21,11 +22,58 @@ import 'widgets/dashboard_filter_bar.dart';
 import 'widgets/completed_project_card.dart';
 import 'widgets/project_card.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> with RouteAware {
+  bool _isReady = false;
+
+  void _triggerDelay() {
+    setState(() {
+      _isReady = false;
+    });
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        setState(() {
+          _isReady = true;
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _triggerDelay();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final modalRoute = ModalRoute.of(context);
+    if (modalRoute != null) {
+      routeObserver.subscribe(this, modalRoute);
+    }
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Called when the top route is popped off, and this route shows up again.
+    _triggerDelay();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserProvider).value;
     final selectedTab = ref.watch(selectedTabProvider);
     final projectsAsync = ref.watch(filteredProjectsProvider);
@@ -82,32 +130,34 @@ class DashboardScreen extends ConsumerWidget {
 
             // ─── Project List ──────────────────────────
             Expanded(
-              child: projectsAsync.when(
-                data: (projects) {
-                  if (projects.isEmpty) {
-                    return Center(
+              child: !_isReady 
+                ? const Center(child: CircularProgressIndicator())
+                : projectsAsync.when(
+                    data: (projects) {
+                      if (projects.isEmpty) {
+                        return Center(
+                          child: Text(
+                            currentUser.isManager
+                                ? 'No projects yet. Create one!'
+                                : 'No projects assigned to you.',
+                            style: const TextStyle(
+                              color: AppColors.textMuted,
+                              fontSize: 14,
+                            ),
+                          ),
+                        );
+                      }
+                      return _buildProjectList(context, ref, projects, currentUser);
+                    },
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Center(
                       child: Text(
-                        currentUser.isManager
-                            ? 'No projects yet. Create one!'
-                            : 'No projects assigned to you.',
-                        style: const TextStyle(
-                          color: AppColors.textMuted,
-                          fontSize: 14,
-                        ),
+                        'Error: $e',
+                        style: const TextStyle(color: AppColors.error),
                       ),
-                    );
-                  }
-                  return _buildProjectList(context, ref, projects, currentUser);
-                },
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(
-                  child: Text(
-                    'Error: $e',
-                    style: const TextStyle(color: AppColors.error),
+                    ),
                   ),
-                ),
-              ),
             ),
           ],
         ),
