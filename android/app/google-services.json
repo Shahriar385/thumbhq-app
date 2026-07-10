@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "14892257053",
+    "project_id": "thumbhq",
+    "storage_bucket": "thumbhq.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14892257053:android:66b10c0659077c3c281bf4",
+        "android_client_info": {
+          "package_name": "com.shlabs.thumbhq"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "14892257053-o4kbbss2thobcbijg7nmmvi1lolfdt97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi2zb7QjJ4V-4Ki_MG4LscR_qyykkPJsk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "14892257053-o4kbbss2thobcbijg7nmmvi1lolfdt97.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "14892257053-etk0c56kuvnoeis7jh5fqg4cd80pf7bk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.shlabs.thumbhq"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
